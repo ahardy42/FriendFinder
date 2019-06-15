@@ -3,6 +3,7 @@
 // ===============================================================================
 
 var orm = require("../data/data");
+var photo = require("../data/photo");
 
 // ===============================================================================
 // ROUTING
@@ -16,16 +17,18 @@ module.exports = function (app) {
     // ---------------------------------------------------------------------------
 
     app.get("/api/friends", function (req, res) {
+        console.log("get request ran");
         // connecting with mySQL database to retrieve friends data
-        // orm.select("*", "friends", function(data) {
-        //     res.json(data);
-        // });
-        var questionArray = [];
-        for (i = 0; i < 10; i++) {
-            questionArray.push(`question_${i+1}`);
-        }
-        orm.getSum("name", questionArray, "friends", function(data) {
+        orm.select("*", "friends", function(data) {
             res.json(data);
+        });
+    });
+
+    app.get("/photo/:gender", function (req, res) {
+        photo.getPhoto(req.params.gender, function (err, data) {
+            if (err) console.log(err);
+
+            res.json(data[0].picture);
         });
     });
 

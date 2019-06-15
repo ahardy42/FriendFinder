@@ -41,7 +41,6 @@ var orm = {
                 valuesArray.push(questionObject[key]);
             }
         };
-        console.log("second string is " + sqlString2);
         connection.query(sqlString2, [table, colsArray, valuesArray], function(err, data) {
             if (err) console.log(err);
             console.log("updated table", data);
