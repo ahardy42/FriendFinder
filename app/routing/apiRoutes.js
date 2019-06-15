@@ -25,10 +25,9 @@ module.exports = function (app) {
     });
 
     app.get("/photo/:gender", function (req, res) {
-        photo.getPhoto(req.params.gender, function (err, data) {
-            if (err) console.log(err);
+        photo.getPhoto(req.params.gender, function (data) {
 
-            res.json(data[0].picture);
+            res.json(data);
         });
     });
 

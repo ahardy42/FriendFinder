@@ -32,7 +32,7 @@ var orm = {
         var colsArray = [];
         var valuesArray = [];
         for (var key in questionObject) {
-            if (key !== "name") {
+            if (key.includes("question")) {
                 var num = parseInt(questionObject[key]);
                 colsArray.push(key);
                 valuesArray.push(num);

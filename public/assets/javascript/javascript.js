@@ -7,7 +7,7 @@ $(document).ready(function () {
     function sumVals(object) {
         var sum = 0, x;
         for (x in object) {
-            if (x !== "name") {
+            if (x.includes("question")) {
                 sum += parseInt(object[x]);
             }
         }
@@ -52,6 +52,32 @@ $(document).ready(function () {
         return namesArray;
     }
 
+    async function getPhoto(gender) {
+        var photo = await $.ajax({url: `/photo/${gender}`});
+        return photo;
+    }
+
+    async function postObject(object, photo) {
+        var response = await $.ajax("/api/friends", {method: "POST", data: object});
+        return response;
+    }
+
+    // put it together
+    async function buildObject(object, photoPath, gender) {
+        console.log("object", object);
+        console.log("photo path", photoPath);
+        console.log("gender", gender);
+        if (photoPath) {
+            object.image = photoPath;
+            data = await postObject(object);
+            return data;
+        } else {
+            photoPath = await getPhoto(gender);
+            object.image = photoPath.picture.large;
+            data = await postObject(object);
+            return data;
+        }
+    }
     // ============================================================================
     // page building functions
     // ============================================================================
@@ -78,8 +104,8 @@ $(document).ready(function () {
     // ============================================================================
 
     // if checkbox for random photo is checked, show the gender selector 
-    $('input[name=checkbox]').change(function(){
-        if($(this).is(':checked')) {
+    $('input[name=checkbox]').change(function () {
+        if ($(this).is(':checked')) {
             // Checkbox is checked..
             console.log("checked!");
             $(".select").css("display", "block");
@@ -89,7 +115,7 @@ $(document).ready(function () {
             $(".select").css("display", "none");
         }
     });
-    
+
     // code for submitting the survey form 
     $(".survey").on("submit", function (e) {
         e.preventDefault();
@@ -108,28 +134,13 @@ $(document).ready(function () {
             question_10: $("#question10").val()
         };
         // get the photoPath variable either from the form, or from an ajax call
-        if ($("#photo").val() !== "") {
-            // grab photo from the input
-            postObject.image = $("#photo").val().trim();
-        } else {
-            // ajax call
-            $.when(
-                $.ajax("/photo", {
-                    method: "GET"
-                })
-            )
-            .done(function(photo) {
-                postObject.image = photo.large;
-            });
-        }
-
-        // then post the resulting data to the db and find some matches
-        $.ajax("/api/friends", {
-            method: "POST",
-            data: postObject
-        }).then(function (data) {
+        var path = $("#photo").val();
+        var gender = $("#gender").val();
+        buildObject(postObject, path, gender)
+        .then(function (data) {
+            console.log(data);
             // now I will see if I can show a modal w/ the info.
-            var newSubmission = data.new; 
+            var newSubmission = data.new;
             var currFriends = data.old;
             var newSubSum = sumVals(newSubmission);
             // compare sums of each person in the DB and return an array of names with the closest sum
