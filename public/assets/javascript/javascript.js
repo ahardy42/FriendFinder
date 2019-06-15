@@ -90,14 +90,9 @@ $(document).ready(function () {
         }
     });
     
+    // code for submitting the survey form 
     $(".survey").on("submit", function (e) {
         e.preventDefault();
-        // get the photoPath variable 
-        $.ajax("/photo", {
-            method: "GET"
-        }).then(function (photo) {
-
-        });
         // posting the values to the database
         var postObject = {
             name: `${$("#firstName").val().trim()} ${$("#lastName").val().trim()}`,
@@ -110,10 +105,25 @@ $(document).ready(function () {
             question_7: $("#question7").val(),
             question_8: $("#question8").val(),
             question_9: $("#question9").val(),
-            question_10: $("#question10").val(),
-            image: photoPath
+            question_10: $("#question10").val()
         };
+        // get the photoPath variable either from the form, or from an ajax call
+        if ($("#photo").val() !== "") {
+            // grab photo from the input
+            postObject.image = $("#photo").val().trim();
+        } else {
+            // ajax call
+            $.when(
+                $.ajax("/photo", {
+                    method: "GET"
+                })
+            )
+            .done(function(photo) {
+                postObject.image = photo.large;
+            });
+        }
 
+        // then post the resulting data to the db and find some matches
         $.ajax("/api/friends", {
             method: "POST",
             data: postObject
