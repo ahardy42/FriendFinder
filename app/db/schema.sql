@@ -15,5 +15,7 @@ CREATE TABLE friends
     question_8 INT(10) NOT NULL,
     question_9 INT(10) NOT NULL,
     question_10 INT(10) NOT NULL,
+    image VARCHAR(255),
+    createdat TIMESTAMP NOT NULL,
 	PRIMARY KEY (id)
 );
