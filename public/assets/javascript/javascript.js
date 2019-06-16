@@ -50,6 +50,7 @@ $(document).ready(function () {
         return namesArray;
     }
 
+    // function returns the photo obtained from the randomuser api
     async function getPhoto(gender) {
         var photo = await $.ajax({url: `/photo/${gender}`});
         return photo;
@@ -87,7 +88,7 @@ $(document).ready(function () {
         // build a list of names w/ namesArray
         var ul = $("<ul class='list-group'>");
         array.forEach(element => {
-            var li = $("<li class='list-group-item'>");
+            var li = $("<li class='list-group-item list-group-item-action'>");
             li.text(element.name);
             li.attr("data-id", element.id);
             ul.append(li);
@@ -187,7 +188,7 @@ $(document).ready(function () {
         });
     });
 
-    // on click for the person
+    // on click for the person you want to see more information on
     $("body").on("click", ".list-group-item", function(e) {
         // build the match modal out
         var id = $(this).attr("data-id");
