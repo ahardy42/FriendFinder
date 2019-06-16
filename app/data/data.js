@@ -11,6 +11,14 @@ var orm = {
             callback(data);
         });
     },
+    selectId: function(selector, table, id, callback) {
+        var sqlString = "SELECT ?? FROM ?? WHERE id = ?";
+        connection.query(sqlString, [selector, table, id], function(err, data) {
+            if (err) console.log(err);
+
+            callback(data);
+        });
+    },
     update: function(table, columns, updatedColumns, callback) {
         var sqlString = "UPDATE ?? (?) VALUES (?)";
         connection.query(sqlString, [table, columns, updatedColumns], function(err, data) {

@@ -41,12 +41,10 @@ $(document).ready(function () {
         });
         var sortedArray = insertionSort(objectArray);
         var namesArray = [];
-        console.log(sortedArray);
-        namesArray.push(sortedArray[0].name);
+        namesArray.push({id: sortedArray[0].id, name: sortedArray[0].name});
         for (x = 1; x < sortedArray.length - 1; x++) {
-            console.log(sortedArray[x].name);
             if (sortedArray[x].difference === sortedArray[0].difference) {
-                namesArray.push(sortedArray[x].name);
+                namesArray.push({id: sortedArray[x].id, name: sortedArray[x].name});
             }
         }
         return namesArray;
@@ -64,9 +62,6 @@ $(document).ready(function () {
 
     // put it together
     async function buildObject(object, photoPath, gender) {
-        console.log("object", object);
-        console.log("photo path", photoPath);
-        console.log("gender", gender);
         if (photoPath) {
             object.image = photoPath;
             data = await postObject(object);
@@ -93,10 +88,50 @@ $(document).ready(function () {
         var ul = $("<ul class='list-group'>");
         array.forEach(element => {
             var li = $("<li class='list-group-item'>");
-            li.text(element);
+            li.text(element.name);
+            li.attr("data-id", element.id);
             ul.append(li);
         });
         $(".modal-body").append(ul);
+    }
+
+    async function getInfoOnMatch(id) {
+        var data = await $.ajax(`/api/friend/${id}`, {method: "GET"});
+        return data;
+    }
+
+    function buildMatchImage(imageUrl) {
+        var img = $("<img class='card-img-top'>");
+        img.attr("src", imageUrl);
+        img.attr("alt", "profile image");
+        return img;
+    }
+
+    function buildMatchList(dataObject) {
+        var ul = $("<ul class='list-group'>");
+        for (var x in dataObject) {
+            if (x.includes("question")) {
+                var li = $("<li class='list-group-item'>");
+                var q = $(`label[for=${x.replace("_","")}]`).text();
+                var question = q.replace(".","");
+                var answer = dataObject[x];
+                li.html(`${question}: <span style='font-weight: bold'>${answer}</span>`);
+                ul.append(li);
+            }
+        }
+        return ul;
+    }
+
+    function buildMatchCard(id) {
+        // get information for your match
+        getInfoOnMatch(id)
+        .then(function(data) {
+            $(".match-name").text(data[0].name);
+            var img = buildMatchImage(data[0].image);
+            $("#match-card").prepend(img);
+            var ul = buildMatchList(data[0]);
+            $("#match-card-body").append(ul);
+        });
     }
 
     // ============================================================================
@@ -148,9 +183,17 @@ $(document).ready(function () {
 
             // pop up modal with names and stuff
             buildModal(namesArray);
-            $(".modal").css("display", "block");
+            $(".modal-one").css("display", "block");
         });
     });
 
     // on click for the person
+    $("body").on("click", ".list-group-item", function(e) {
+        // build the match modal out
+        var id = $(this).attr("data-id");
+        buildMatchCard(id);
+        // show that modal!
+        $(".modal-one").css("display", "none");
+        $(".modal-two").css({"display": "block", "overflow": "auto"});
+    });
 });

@@ -24,6 +24,12 @@ module.exports = function (app) {
         });
     });
 
+    app.get("/api/friend/:id", function (req, res) {
+        orm.selectId("*", "friends", req.params.id, function(data) {
+            res.json(data);
+        });
+    })
+
     app.get("/photo/:gender", function (req, res) {
         photo.getPhoto(req.params.gender, function (data) {
 
@@ -42,7 +48,7 @@ module.exports = function (app) {
     app.post("/api/friends", function (req, res) {
         // post logic the data packet will include a sum that can be compared
         var questionObject = req.body;
-        orm.getSumAndUpdate("name", questionObject, "friends", function(data) {
+        orm.getSumAndUpdate(["name", "id"], questionObject, "friends", function(data) {
             res.json({old: data, new: questionObject});
         });
     });
