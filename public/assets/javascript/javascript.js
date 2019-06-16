@@ -143,12 +143,12 @@ $(document).ready(function () {
     $('input[name=checkbox]').change(function () {
         if ($(this).is(':checked')) {
             // Checkbox is checked..
-            console.log("checked!");
             $(".select").css("display", "block");
+            $("#photo-group").css("display", "none");
         } else {
             // Checkbox is not checked..
-            console.log("UNchecked!");
             $(".select").css("display", "none");
+            $("#photo-group").css("display", "block");
         }
     });
 
@@ -196,5 +196,13 @@ $(document).ready(function () {
         // show that modal!
         $(".modal-one").css("display", "none");
         $(".modal-two").css({"display": "block", "overflow": "auto"});
+    });
+
+    // option to close the modals
+    $(".close").on("click", function() {
+        var dismiss = $(this).attr("data-dismiss");
+        $(`.${dismiss}`).css("display", "none");
+        // refresh the survey
+        location.href = "/survey";
     });
 });
